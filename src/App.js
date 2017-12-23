@@ -3,7 +3,7 @@ import { Route,Link } from 'react-router-dom'
 import * as BooksAPI from './BooksAPI';
 import './css/App.css';
 import BookList from './components/BookList';
-import Search from './Search'
+import SearchPage from './Search'
 
 class BooksApp extends React.Component {
 
@@ -25,14 +25,16 @@ class BooksApp extends React.Component {
     })
   }
 
-  render() {
-    const { books } = this.state;    
+  render() {   
     return (
       <div className="app">
           <Route path="/search" render={( { history }) => (
-            <Search
-              books={ books }
-              changeShelf={ this.changeShelf }
+            <SearchPage
+                myBooks={this.state.books}
+                onShelfChange={(id,shelf)=>{
+                  this.changeShelf(id,shelf)
+                  history.push('/')
+                }}
             />
           )} />
           <Route exact path="/" render={()=>(

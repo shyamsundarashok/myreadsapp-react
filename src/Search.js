@@ -1,77 +1,82 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
-import Book from './components/Book'
+import React, {Component} from 'react'
+import {Link} from 'react-router-dom'
+import {PropTypes} from 'prop-types'
 import * as BooksAPI from './BooksAPI'
 
-class Search extends Component {
-  static propTypes = {
-    books: PropTypes.array.isRequired,
-    changeShelf: PropTypes.func.isRequired
-  }
 
-  state = {
-    query: '',
-    newBooks: [],
-    searchErr: false
-  }
+import BookShelf from './components/BookShelf'
 
-  getBooks = (event) => {
+export default class SearchPage extends Component {
 
-    const query = event.target.value.trim()
-    this.setState({ query: query })
+    state = {
+        books: [],
+        query: ''
+    }
 
-    if (query) {
-      BooksAPI.search(query, 20).then((books) => {
-        books.length > 0 ?  this.setState({newBooks: books, searchErr: false }) : this.setState({ newBooks: [], searchErr: true })
-      })
+    mergeArr = (arr,Arr) => {
+        return arr.map((item)=>{
+            Arr.forEach((Item)=>{
+            if(Item.id === item.id){
+                item.shelf = Item.shelf
+                return
+            }
+            })
+            return item
+        })
+    }
 
-  } else this.setState({newBooks: [], searchErr: false })
-  }
+    updateQuery = (event) => {
+        const value = event.target.value.trim()
+        this.setState({query: value})
+        this.searchData(value)
+    }
 
-  render() {
+    searchData = (value) => {
+        if (value.length !== 0) {
+            BooksAPI.search(value, 10).then((books) => {
+            if(books.length>0){
+                books = books.filter((book)=>book.imageLinks)
+                books = this.mergeArr(books,this.props.myBooks)
+                this.setState({books})
+            }
+            else{
+                this.setState({books: []})
+            }
+            })
+        } else {
+            this.setState({books: [], query: ''})
+        }
+    }
 
-    const { query, newBooks, searchErr } = this.state
-    const { books, changeShelf } = this.props
+    static propTypes = {
+    myBooks: PropTypes.array,
+    onShelfChange: PropTypes.func.isRequired
+    }
 
-      return (
+    render() {
+    const books = this.state.books
+    const query = this.state.query
+    return (
+        <div>
         <div className="search-books">
-          <div className="search-books-bar">
-            <Link className="close-search"  to="/">Close</Link>
+            <div className="search-books-bar">
+            <Link className="close-search" to="/">Close</Link>
             <div className="search-books-input-wrapper">
-              <input type="text"
+                <input type="text"
                 placeholder="Search by title or author"
-                value={ query }
-                onChange={ this.getBooks } />
+                value={query}
+                onChange={this.updateQuery}
+                />
             </div>
-          </div>
-          <div className="search-books-results">
-            { newBooks.length > 0 && (
-              <div>
-                <div className=''>
-                  <h3>Search returned { newBooks.length } books </h3>
-                </div>
-                <ol className="books-grid">
-                  {newBooks.map((book) => (
-                    <Book
-                      book={ book }
-                      books={ books }
-                      key={ book.id }
-                      onShelfChange={ changeShelf }
-                    />
-                  ))}
-                </ol>
-              </div>
-            )}
-            { searchErr  && (
-              <div>
-                <div className=''>
-                  <h3>Search returned 0 books.  Please try again!</h3>
-                  </div>
-                </div>
-            )}
-          </div>
+            </div>
+            <div className="search-books-results">
+            <ol className="books-grid"></ol>
+            </div>
         </div>
-      )}
+        {this.state.query !== '' && books.length > 0 && (<BookShelf title="Search Results" books={books} onShelfChange={(id, shelf) => {
+            this.props.onShelfChange(id, shelf)
+        }}/>)}
+        </div>
+    )
+    }
 }
-export default Search
