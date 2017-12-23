@@ -18,12 +18,6 @@ class Book extends React.Component {
 
     render()
     {
-           const bookcoverStyle ={
-            width: 128, 
-            height: 193,
-            backgroundImage: "url("+this.props.book.imageLinks.thumbnail+")"
-          };
-
           var actions = [
             {value:"moveTo",name:"Move to..."},
             {value:"currentlyReading",name:"Currently Reading"},
@@ -55,7 +49,10 @@ class Book extends React.Component {
                     </div>
                 </div>
                 <div className="book-title">{this.props.book.title}</div>
-                <div className="book-authors">{this.props.book.authors}</div>
+                {
+                    this.props.book.authors && this.props.book.authors.map((author, index) => (
+                        <div className="book-authors" key={index}>{author}</div>
+                ))}
                 </div>
             </li>
         );
