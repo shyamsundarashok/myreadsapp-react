@@ -6,6 +6,7 @@ class Book extends React.Component {
 
     static propTypes = {
     book: PropTypes.object.isRequired,
+    shelf: PropTypes.string.isRequired,
     onShelfChange: PropTypes.func.isRequired
     }
 
@@ -17,23 +18,6 @@ class Book extends React.Component {
 
     render()
     {
-          var actions = [
-            {value:"moveTo",name:"Move to..."},
-            {value:"currentlyReading",name:"Currently Reading"},
-            {value:"wantToRead",name:"Want to Read"},
-            {value:"read",name:"Read"},
-        ];
-        var currentShelf = this.props.book.shelf;
-        var options = actions
-        .filter(function(action) { 
-            return action.value !== currentShelf; 
-        })
-        .map(function(action){
-          return (
-              <option value={action.value} key={action.value}>{action.name}</option>
-          )
-        });
-
         return (
             <li>
                 <div className="book">
@@ -44,7 +28,12 @@ class Book extends React.Component {
                         backgroundImage: "url("+this.props.book.imageLinks.thumbnail+")"}}>
                     </div>
                     <div className="book-shelf-changer">
-                        <select onChange={this.changeShelf}>{options}</select>
+                        <select onChange={this.changeShelf} value={this.props.shelf}>
+                            <option value="none" disabled>Move to...</option>
+                            <option value="currentlyReading">Currently Reading</option>
+                            <option value="wantToRead">Want to Read</option>
+                            <option value="read">Read</option>                        
+                        </select>
                     </div>
                 </div>
                 <div className="book-title">{this.props.book.title}</div>

@@ -20,6 +20,7 @@ class BookShelf extends React.Component {
                         <Book
                              book={book}
                              key={ book.id }
+                             shelf={book.shelf}
                              onShelfChange={(shelf)=>{
                                 this.props.onShelfChange(book.id,shelf)
                              }}
