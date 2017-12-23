@@ -13,19 +13,24 @@ export default class SearchPage extends Component {
         query: ''
     }
 
-    mergeArr = (arr,Arr) => {
-        return arr.map((item)=>{
-            Arr.forEach((Item)=>{
+    static propTypes = {
+        myBooks: PropTypes.array,
+        onShelfChange: PropTypes.func.isRequired
+    }
+
+    mergeBooks = (booksData,myBooksData) => {
+        return booksData.map((item)=>{
+            myBooksData.forEach((Item)=>{
             if(Item.id === item.id){
-                item.shelf = Item.shelf
-                return
+                item.shelf = Item.shelf;
+                return;
             }
             })
-            return item
+            return item;
         })
     }
 
-    updateQuery = (event) => {
+    searchBooks = (event) => {
         const value = event.target.value.trim()
         this.setState({query: value})
         this.searchData(value)
@@ -36,7 +41,7 @@ export default class SearchPage extends Component {
             BooksAPI.search(value, 10).then((books) => {
             if(books.length>0){
                 books = books.filter((book)=>book.imageLinks)
-                books = this.mergeArr(books,this.props.myBooks)
+                books = this.mergeBooks(books,this.props.myBooks)
                 this.setState({books})
             }
             else{
@@ -46,12 +51,7 @@ export default class SearchPage extends Component {
         } else {
             this.setState({books: [], query: ''})
         }
-    }
-
-    static propTypes = {
-    myBooks: PropTypes.array,
-    onShelfChange: PropTypes.func.isRequired
-    }
+    }    
 
     render() {
     const books = this.state.books
@@ -65,7 +65,7 @@ export default class SearchPage extends Component {
                 <input type="text"
                 placeholder="Search by title or author"
                 value={query}
-                onChange={this.updateQuery}
+                onChange={this.searchBooks}
                 />
             </div>
             </div>

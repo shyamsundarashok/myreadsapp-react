@@ -6,7 +6,7 @@ class Book extends React.Component {
 
     static propTypes = {
     book: PropTypes.object.isRequired,
-    shelf: PropTypes.string.isRequired,
+    shelf: PropTypes.string,
     onShelfChange: PropTypes.func.isRequired
     }
 
