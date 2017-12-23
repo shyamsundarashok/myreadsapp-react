@@ -10,7 +10,6 @@ class Book extends React.Component {
     }
 
     changeShelf = (event) => {
-        console.log("changeShelf : "+event.target.value);
          if(event.target.value.length===0)
              return;
          this.props.onShelfChange(event.target.value)
